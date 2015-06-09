@@ -1,0 +1,14 @@
+**/.metadata/
+**/[Bb]in*/
+**/[Gg]en*/
+**/*.orig
+**/.idea
+**/*.iml
+**/*.hprof
+
+**/.gradle
+**/local.properties
+**/.idea/workspace.xml
+**/.idea/libraries
+**/.DS_Store
+**/build
