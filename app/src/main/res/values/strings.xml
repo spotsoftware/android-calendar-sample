@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Calendar Sample</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="read_calendars">Leggi calendari</string>
+    <string name="read_events">Leggi eventi</string>
+    <string name="event_duration">Da %1$s a %2$s</string>
+</resources>
