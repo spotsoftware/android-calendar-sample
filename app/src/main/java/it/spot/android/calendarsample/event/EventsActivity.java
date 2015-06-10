@@ -16,6 +16,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import it.spot.android.calendarsample.R;
 
@@ -59,18 +60,30 @@ public class EventsActivity
                                 Calendar beginTime = Calendar.getInstance();
                                 beginTime.set(Calendar.HOUR_OF_DAY, 20);
                                 beginTime.set(Calendar.MINUTE, 16);
+                                beginTime.setTimeZone(TimeZone.getDefault());
                                 Calendar endTime = Calendar.getInstance();
+                                endTime.set(Calendar.DAY_OF_MONTH, 25);
                                 endTime.set(Calendar.HOUR_OF_DAY, 22);
                                 endTime.set(Calendar.MINUTE, 50);
+                                endTime.setTimeZone(TimeZone.getDefault());
 
                                 ContentValues values = new ContentValues();
                                 values.put(CalendarContract.Events.CALENDAR_ID, mCalendarId);
                                 values.put(CalendarContract.Events.TITLE, "stocabbello");
                                 values.put(CalendarContract.Events.DESCRIPTION, "un bellissimo evento di prova e guai a chi caga la minchia");
                                 values.put(CalendarContract.Events.DTSTART, beginTime.getTimeInMillis());
-                                values.put(CalendarContract.Events.DTEND, endTime.getTimeInMillis());
+                                values.putNull(CalendarContract.Events.DTEND);
+//                                values.put(CalendarContract.Events.DTEND, endTime.getTimeInMillis());
                                 values.put(CalendarContract.Events.EVENT_TIMEZONE, "GMT");
                                 values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PUBLIC);
+                                values.put(CalendarContract.Events.RRULE, new EventRecurrence()
+                                        .recursIn(EventRecurrence.RECURRENCE_WINDOW_WEEKLY)
+                                        .recursOn(EventRecurrence.RECURRENCE_ON_TUESDAY)
+                                        .recursOn(EventRecurrence.RECURRENCE_ON_THURSDAY)
+                                        .toString());
+                                values.put(CalendarContract.Events.EXRULE, "FREQ=WEEKLY;UNTIL=20150708T000000Z;BYDAY=TH");
+                                values.put(CalendarContract.Events.DURATION, "P3600S");
+                                values.put(CalendarContract.Events.EVENT_LOCATION, "Event Location");
 
                                 mEventsQueryHandler.startInsert(1, null,
                                         CalendarContract.Events.CONTENT_URI.buildUpon()

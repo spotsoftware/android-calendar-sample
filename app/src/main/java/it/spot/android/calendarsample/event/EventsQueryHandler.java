@@ -50,6 +50,7 @@ public class EventsQueryHandler extends AsyncQueryHandler {
 
         int idIndex = cursor.getColumnIndex(CalendarContract.Events._ID);
         int titleIndex = cursor.getColumnIndex(CalendarContract.Events.TITLE);
+        int descIndex = cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION);
         int startIndex = cursor.getColumnIndex(CalendarContract.Events.DTSTART);
         int endIndex = cursor.getColumnIndex(CalendarContract.Events.DTEND);
         ArrayList<EventModel> events = new ArrayList<EventModel>();
@@ -63,9 +64,14 @@ public class EventsQueryHandler extends AsyncQueryHandler {
                 startDate = Calendar.getInstance();
                 startDate.setTimeInMillis(Long.valueOf(cursor.getString(startIndex)));
                 endDate = Calendar.getInstance();
-                endDate.setTimeInMillis(Long.valueOf(cursor.getString(endIndex)));
+                if (endIndex > -1) {
+                    try {
+                        endDate.setTimeInMillis(Long.valueOf(cursor.getString(endIndex)));
+                    } catch (NumberFormatException ex) {
+                    }
+                }
 
-                events.add(new EventModel(cursor.getInt(idIndex), cursor.getString(titleIndex), startDate, endDate));
+                events.add(new EventModel(cursor.getInt(idIndex), cursor.getString(titleIndex), "", startDate, endDate));
             }
         }
 
