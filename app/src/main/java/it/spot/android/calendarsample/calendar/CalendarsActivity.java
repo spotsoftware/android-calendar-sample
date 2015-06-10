@@ -2,12 +2,10 @@ package it.spot.android.calendarsample.calendar;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.CalendarContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -52,31 +50,24 @@ public class CalendarsActivity
                 final EditText dispNameEditText = (EditText) dialogBody.findViewById(R.id.display_name);
 
                 new AlertDialog.Builder(CalendarsActivity.this)
-                        .setTitle("Aggiungi calendario")
+                        .setTitle(R.string.add_calendar)
                         .setView(dialogBody)
-                        .setPositiveButton("Crea", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
 
-                                ContentValues values = new ContentValues();
-                                values.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
-                                values.put(CalendarContract.Calendars.VISIBLE, 1);
-                                values.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, CalendarContract.Calendars.CAL_ACCESS_OWNER);
-                                values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, dispNameEditText.getText().toString());
-                                values.put(CalendarContract.Calendars.NAME, nameEditText.getText().toString());
-                                values.put(CalendarContract.Calendars.ACCOUNT_NAME, "private");
-                                values.put(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL);
-
-                                mCalendarsQueryHandler.startInsert(1, null,
-                                        CalendarContract.Calendars.CONTENT_URI.buildUpon()
-                                                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, "private")
-                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
-                                                .build(), values);
+                                mCalendarsQueryHandler.create(CalendarModel.create()
+                                        .enableSyncEvents(true)
+                                        .setVisibility(true)
+                                        .setAccessLevel(CalendarContract.Calendars.CAL_ACCESS_OWNER)
+                                        .setAccountName("private")
+                                        .setAccountType(CalendarContract.ACCOUNT_TYPE_LOCAL)
+                                        .setName(nameEditText.getText().toString())
+                                        .setDisplayName(dispNameEditText.getText().toString()));
                             }
                         })
-                        .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -95,8 +86,8 @@ public class CalendarsActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 new AlertDialog.Builder(CalendarsActivity.this)
-                        .setMessage("Cosa vuoi fare?")
-                        .setPositiveButton("Apri", new DialogInterface.OnClickListener() {
+                        .setMessage(R.string.choose_what_to_do)
+                        .setPositiveButton(R.string.open, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -104,36 +95,11 @@ public class CalendarsActivity
                                         .putExtra(EventsActivity.EXTRA_CALENDAR_ID, mCalendars.get(position).getId()));
                             }
                         })
-                        .setNegativeButton("Elimina", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                mCalendarsQueryHandler.startDelete(
-                                        1,
-                                        null,
-                                        CalendarContract.Calendars.CONTENT_URI.buildUpon().appendPath(String.valueOf(mCalendars.get(position).getId()))
-                                                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, "private")
-                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
-                                                .build(),
-                                        null,
-                                        null);
-//                                ContentValues values = new ContentValues();
-//                                values.put(CalendarContract.Calendars.NAME, "My bello Calendar");
-//                                values.put(CalendarContract.Calendars.ACCOUNT_NAME, "private");
-//                                values.put(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL);
-//
-//                                mCalendarsQueryHandler.startUpdate(
-//                                        1,
-//                                        null,
-//                                        CalendarContract.Calendars.CONTENT_URI.buildUpon().appendPath(String.valueOf(mCalendars.get(position).getId()))
-//                                                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-//                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, "private")
-//                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
-//                                                .build(),
-//                                        values,
-//                                        null,
-//                                        null);
+                                mCalendarsQueryHandler.delete(mCalendars.get(position));
                             }
                         })
                         .create()
@@ -150,24 +116,7 @@ public class CalendarsActivity
     // region Public methods
 
     public void queryCalendars(View v) {
-        Log.e("CALENDARS_QUERY", "starting the query");
-
-        String[] projection = {
-                CalendarContract.Calendars._ID,
-                CalendarContract.Calendars.NAME,
-                CalendarContract.Calendars.CALENDAR_LOCATION,
-                CalendarContract.Calendars.ACCOUNT_NAME,
-                CalendarContract.Calendars.ACCOUNT_TYPE
-        };
-
-        this.mCalendarsQueryHandler.startQuery(
-                1,
-                null,
-                CalendarContract.Calendars.CONTENT_URI,
-                projection,
-                null,
-                null,
-                CalendarContract.Calendars.DEFAULT_SORT_ORDER);
+        this.mCalendarsQueryHandler.getAll(CalendarModel.create());
     }
 
     // endregion

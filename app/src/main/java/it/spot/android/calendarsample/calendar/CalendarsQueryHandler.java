@@ -1,6 +1,5 @@
 package it.spot.android.calendarsample.calendar;
 
-import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,10 +8,12 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.spot.android.calendarsample.shared.BaseAsyncQueryHandler;
+
 /**
  * @author a.rinaldi
  */
-public class CalendarsQueryHandler extends AsyncQueryHandler {
+public class CalendarsQueryHandler extends BaseAsyncQueryHandler<CalendarModel> {
 
     private final ArrayList<Listener> mListeners;
 

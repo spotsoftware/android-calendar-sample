@@ -1,14 +1,17 @@
 package it.spot.android.calendarsample.calendar;
 
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.CalendarContract;
+
+import it.spot.android.calendarsample.shared.ContentProviderEntityModel;
 
 /**
  * @author a.rinaldi
  */
-public class CalendarModel {
+public class CalendarModel extends ContentProviderEntityModel {
 
-    private int mId;
     private String mName;
     private String mDisplayName;
     private String mAccountName;
@@ -17,23 +20,25 @@ public class CalendarModel {
     private int mAccessLevel;
 
     private boolean mIsVisible;
+    private boolean mHasChangedVisibility;
     private boolean mSyncEvents;
+    private boolean mHasChangedSyncEvents;
 
     // region Construction
 
     protected CalendarModel() {
         super();
 
-        this.mId = -1;
-        this.mName = "";
-        this.mDisplayName = "";
-        this.mAccountName = "private";
-        this.mAccountType = CalendarContract.ACCOUNT_TYPE_LOCAL;
-
-        this.mAccessLevel = CalendarContract.Calendars.CAL_ACCESS_OWNER;
+        this.mName = null;
+        this.mDisplayName = null;
+        this.mAccountName = null;
+        this.mAccountType = null;
+        this.mAccessLevel = -1;
 
         this.mIsVisible = false;
+        this.mHasChangedVisibility = false;
         this.mSyncEvents = false;
+        this.mHasChangedSyncEvents = false;
     }
 
     public static CalendarModel create() {
@@ -42,60 +47,13 @@ public class CalendarModel {
 
     public static CalendarModel createFromCursor(final Cursor cursor) {
         CalendarModel calendar = new CalendarModel();
-
-        int index = cursor.getColumnIndex(CalendarContract.Calendars._ID);
-        calendar.setId(cursor.getInt(index));
-
-        index = cursor.getColumnIndex(CalendarContract.Calendars.NAME);
-        if (index > -1) {
-            calendar.setName(cursor.getString(index));
-        }
-
-        index = cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME);
-        if (index > -1) {
-            calendar.setDisplayName(cursor.getString(index));
-        }
-
-        index = cursor.getColumnIndex(CalendarContract.Calendars.SYNC_EVENTS);
-        if (index > -1) {
-            calendar.enableSyncEvents(cursor.getInt(index) == 1);
-        }
-
-        index = cursor.getColumnIndex(CalendarContract.Calendars.VISIBLE);
-        if (index > -1) {
-            calendar.setVisibility(cursor.getInt(index) == 1);
-        }
-
-        index = cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL);
-        if (index > -1) {
-            calendar.setAccessLevel(cursor.getInt(index));
-        }
-
-        index = cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_NAME);
-        if (index > -1) {
-            calendar.setAccountName(cursor.getString(index));
-        }
-
-        index = cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_TYPE);
-        if (index > -1) {
-            calendar.setAccountType(cursor.getString(index));
-        }
-
+        calendar.fillFromCursor(cursor);
         return calendar;
     }
 
     // endregion
 
     // region Public methods
-
-    public int getId() {
-        return this.mId;
-    }
-
-    public CalendarModel setId(int id) {
-        this.mId = id;
-        return this;
-    }
 
     public String getName() {
         return this.mName;
@@ -138,6 +96,7 @@ public class CalendarModel {
     }
 
     public CalendarModel setVisibility(boolean visible) {
+        this.mHasChangedVisibility = true;
         this.mIsVisible = visible;
         return this;
     }
@@ -147,6 +106,7 @@ public class CalendarModel {
     }
 
     public CalendarModel enableSyncEvents(boolean syncEvents) {
+        this.mHasChangedSyncEvents = true;
         this.mSyncEvents = syncEvents;
         return this;
     }
@@ -158,6 +118,119 @@ public class CalendarModel {
     public CalendarModel setAccessLevel(int accessLevel) {
         this.mAccessLevel = accessLevel;
         return this;
+    }
+
+    // endregion
+
+    // region ContentProviderEntityModel implementation
+
+    @Override
+    public Uri getContentProviderUri() {
+        Uri.Builder builder = CalendarContract.Calendars.CONTENT_URI.buildUpon();
+
+        if (this.mAccountName != null && this.mAccountType != null) {
+            builder.appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                    .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, this.mAccountName)
+                    .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, this.mAccountType);
+        }
+
+        return builder.build();
+    }
+
+    @Override
+    public String[] getProjection() {
+        return new String[]{
+                CalendarContract.Calendars._ID,
+                CalendarContract.Calendars.NAME,
+                CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
+                CalendarContract.Calendars.CALENDAR_LOCATION,
+                CalendarContract.Calendars.ACCOUNT_NAME,
+                CalendarContract.Calendars.ACCOUNT_TYPE,
+                CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
+                CalendarContract.Calendars.SYNC_EVENTS,
+                CalendarContract.Calendars.VISIBLE
+        };
+    }
+
+    @Override
+    public void fillFromCursor(Cursor cursor) {
+
+        int index = cursor.getColumnIndex(CalendarContract.Calendars._ID);
+        this.setId(cursor.getInt(index));
+
+        index = cursor.getColumnIndex(CalendarContract.Calendars.NAME);
+        if (index > -1) {
+            this.setName(cursor.getString(index));
+        }
+
+        index = cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME);
+        if (index > -1) {
+            this.setDisplayName(cursor.getString(index));
+        }
+
+        index = cursor.getColumnIndex(CalendarContract.Calendars.SYNC_EVENTS);
+        if (index > -1) {
+            this.enableSyncEvents(cursor.getInt(index) == 1);
+        }
+
+        index = cursor.getColumnIndex(CalendarContract.Calendars.VISIBLE);
+        if (index > -1) {
+            this.setVisibility(cursor.getInt(index) == 1);
+        }
+
+        index = cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL);
+        if (index > -1) {
+            this.setAccessLevel(cursor.getInt(index));
+        }
+
+        index = cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_NAME);
+        if (index > -1) {
+            this.setAccountName(cursor.getString(index));
+        }
+
+        index = cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_TYPE);
+        if (index > -1) {
+            this.setAccountType(cursor.getString(index));
+        }
+    }
+
+    @Override
+    public ContentValues fillContentValues() {
+        ContentValues values = new ContentValues();
+
+        if (this.mId != -1) {
+            values.put(CalendarContract.Calendars._ID, this.mId);
+        }
+
+        if (this.mAccountName != null) {
+            values.put(CalendarContract.Calendars.ACCOUNT_NAME, this.mAccountName);
+        }
+
+        if (this.mAccountType != null) {
+            values.put(CalendarContract.Calendars.ACCOUNT_TYPE, this.mAccountType);
+        }
+
+        if (this.mAccessLevel > -1) {
+            values.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, this.mAccessLevel);
+        }
+
+        if (this.mHasChangedSyncEvents) {
+            values.put(CalendarContract.Calendars.SYNC_EVENTS, this.mSyncEvents ? 1 : 0);
+        }
+
+        if (this.mHasChangedVisibility) {
+            values.put(CalendarContract.Calendars.VISIBLE, this.mIsVisible ? 1 : 0);
+        }
+
+        if (this.mName != null) {
+            values.put(CalendarContract.Calendars.NAME, this.mName);
+        }
+
+        if (this.mDisplayName != null) {
+            values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, this.mDisplayName);
+        }
+
+        return values;
     }
 
     // endregion

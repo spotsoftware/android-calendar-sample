@@ -51,8 +51,8 @@ public class EventsActivity
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(EventsActivity.this)
-                        .setTitle("Aggiungi evento")
-                        .setPositiveButton("Crea", new DialogInterface.OnClickListener() {
+                        .setTitle(R.string.add_event)
+                        .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -93,7 +93,7 @@ public class EventsActivity
                                                 .build(), values);
                             }
                         })
-                        .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -112,8 +112,8 @@ public class EventsActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 new AlertDialog.Builder(EventsActivity.this)
-                        .setMessage("Sei sicuro di voler eliminare l'evento?")
-                        .setPositiveButton("Sì", new DialogInterface.OnClickListener() {
+                        .setMessage(R.string.delete_event_alert)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -129,7 +129,7 @@ public class EventsActivity
                                         null);
                             }
                         })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
