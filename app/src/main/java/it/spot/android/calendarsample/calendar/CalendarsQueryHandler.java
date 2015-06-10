@@ -4,7 +4,6 @@ import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.CalendarContract;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -49,19 +48,11 @@ public class CalendarsQueryHandler extends AsyncQueryHandler {
 
     @Override
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-        Log.e("CAL_QUERY_HANDLER", "query completed with " + cursor.getCount() + " records");
-
-        int idIndex = cursor.getColumnIndex(CalendarContract.Calendars._ID);
-        int nameIndex = cursor.getColumnIndex(CalendarContract.Calendars.NAME);
-        int accountNameIndex = cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_NAME);
         ArrayList<CalendarModel> calendars = new ArrayList<CalendarModel>();
 
         if (cursor != null && cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
-                calendars.add(new CalendarModel(
-                        cursor.getInt(idIndex),
-                        cursor.getString(nameIndex),
-                        accountNameIndex > -1 ? cursor.getString(accountNameIndex) : ""));
+                calendars.add(CalendarModel.createFromCursor(cursor));
             }
         }
 
