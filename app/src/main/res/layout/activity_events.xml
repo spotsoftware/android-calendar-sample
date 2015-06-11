@@ -36,4 +36,15 @@
         fab:fab_colorPressed="@android:color/holo_blue_dark"
         fab:fab_icon="@drawable/create_contact" />
 
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button_delete_all_events"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/button_add_event"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="16dp"
+        fab:fab_colorNormal="@android:color/holo_green_light"
+        fab:fab_colorPressed="@android:color/holo_green_dark"
+        fab:fab_icon="@drawable/create_contact" />
+
 </RelativeLayout>

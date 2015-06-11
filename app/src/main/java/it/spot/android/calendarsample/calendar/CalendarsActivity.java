@@ -116,7 +116,7 @@ public class CalendarsActivity
     // region Public methods
 
     public void queryCalendars(View v) {
-        this.mCalendarsQueryHandler.getAll(CalendarModel.create());
+        this.mCalendarsQueryHandler.getAll(CalendarModel.create(), null, null);
     }
 
     // endregion

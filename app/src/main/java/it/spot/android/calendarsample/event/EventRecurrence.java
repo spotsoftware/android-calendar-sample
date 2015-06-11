@@ -1,6 +1,7 @@
 package it.spot.android.calendarsample.event;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * @author a.rinaldi
@@ -22,14 +23,27 @@ public class EventRecurrence {
 
     private int mRecursEvery = -1;
     private String mRecursIn = null;
+    private Calendar mRecursUntil = null;
 
     private ArrayList<String> mRecursOn;
 
     // region Construction
 
-    public EventRecurrence() {
+    protected EventRecurrence() {
         super();
         this.mRecursOn = new ArrayList<String>();
+    }
+
+    public static EventRecurrence create() {
+        return new EventRecurrence();
+    }
+
+    public static EventRecurrence fromString(String recStr) {
+        EventRecurrence recurrence = new EventRecurrence();
+
+        // TODO - parse string
+
+        return recurrence;
     }
 
     // endregion
@@ -49,6 +63,12 @@ public class EventRecurrence {
 
     public EventRecurrence recursIn(String window) {
         this.mRecursIn = window;
+        return this;
+    }
+
+    public EventRecurrence recursUntil(Calendar date) {
+
+
         return this;
     }
 

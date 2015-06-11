@@ -1,6 +1,5 @@
 package it.spot.android.calendarsample.event;
 
-import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -8,13 +7,14 @@ import android.provider.CalendarContract;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+
+import it.spot.android.calendarsample.shared.BaseAsyncQueryHandler;
 
 /**
  * @author a.rinaldi
  */
-public class EventsQueryHandler extends AsyncQueryHandler {
+public class EventsQueryHandler extends BaseAsyncQueryHandler<EventModel> {
 
     private final ArrayList<Listener> mListeners;
 
@@ -48,30 +48,14 @@ public class EventsQueryHandler extends AsyncQueryHandler {
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
         Log.e("CAL_QUERY_HANDLER", "query completed with " + cursor.getCount() + " records");
 
-        int idIndex = cursor.getColumnIndex(CalendarContract.Events._ID);
-        int titleIndex = cursor.getColumnIndex(CalendarContract.Events.TITLE);
-        int descIndex = cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION);
-        int startIndex = cursor.getColumnIndex(CalendarContract.Events.DTSTART);
-        int endIndex = cursor.getColumnIndex(CalendarContract.Events.DTEND);
+        EventModel model;
         ArrayList<EventModel> events = new ArrayList<EventModel>();
-
-        Calendar startDate;
-        Calendar endDate;
 
         if (cursor != null && cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
-                // TODO - pass current app locale?
-                startDate = Calendar.getInstance();
-                startDate.setTimeInMillis(Long.valueOf(cursor.getString(startIndex)));
-                endDate = Calendar.getInstance();
-                if (endIndex > -1) {
-                    try {
-                        endDate.setTimeInMillis(Long.valueOf(cursor.getString(endIndex)));
-                    } catch (NumberFormatException ex) {
-                    }
-                }
-
-                events.add(new EventModel(cursor.getInt(idIndex), cursor.getString(titleIndex), "", startDate, endDate));
+                model = EventModel.create();
+                model.fillFromCursor(cursor);
+                events.add(model);
             }
         }
 
@@ -81,6 +65,11 @@ public class EventsQueryHandler extends AsyncQueryHandler {
     // endregion
 
     // region Public methods
+
+    public void deleteAllEventsForCalendar(EventModel model, int calendarId) {
+        Log.e("DELETE_ALL_EVENTS", "" + calendarId);
+        this.startDelete(1, null, model.getContentProviderUri(), CalendarContract.Events.CALENDAR_ID + " = ? ", new String[]{String.valueOf(calendarId)});
+    }
 
     public void registerListener(Listener listener) {
         if (!this.mListeners.contains(listener)) {

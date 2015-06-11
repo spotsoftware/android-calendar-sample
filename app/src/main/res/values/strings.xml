@@ -16,6 +16,7 @@
     <string name="yes">Sì</string>
     <string name="no">No</string>
     <string name="create">Create</string>
+    <string name="create_recurrent">Create recurrent</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
 </resources>

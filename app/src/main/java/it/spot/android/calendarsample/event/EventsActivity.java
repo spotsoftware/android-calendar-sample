@@ -2,7 +2,6 @@ package it.spot.android.calendarsample.event;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -34,6 +33,7 @@ public class EventsActivity
     private ListView mEventsListView;
 
     private FloatingActionButton mCreateEventButton;
+    private FloatingActionButton mDeleteAllEventsButton;
 
     private int mCalendarId;
 
@@ -46,13 +46,29 @@ public class EventsActivity
 
         this.mCalendarId = this.getIntent().getExtras().getInt(EXTRA_CALENDAR_ID, -1);
 
+        this.mDeleteAllEventsButton = (FloatingActionButton) this.findViewById(R.id.button_delete_all_events);
+        this.mDeleteAllEventsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEventsQueryHandler.deleteAllEventsForCalendar(EventModel.create(), mCalendarId);
+            }
+        });
+
         this.mCreateEventButton = (FloatingActionButton) this.findViewById(R.id.button_add_event);
         this.mCreateEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(EventsActivity.this)
                         .setTitle(R.string.add_event)
-                        .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.create_recurrent, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+
+
+                            }
+                        })
+                        .setNeutralButton(R.string.create, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -67,30 +83,32 @@ public class EventsActivity
                                 endTime.set(Calendar.MINUTE, 50);
                                 endTime.setTimeZone(TimeZone.getDefault());
 
-                                ContentValues values = new ContentValues();
-                                values.put(CalendarContract.Events.CALENDAR_ID, mCalendarId);
-                                values.put(CalendarContract.Events.TITLE, "stocabbello");
-                                values.put(CalendarContract.Events.DESCRIPTION, "un bellissimo evento di prova e guai a chi caga la minchia");
-                                values.put(CalendarContract.Events.DTSTART, beginTime.getTimeInMillis());
-                                values.putNull(CalendarContract.Events.DTEND);
-//                                values.put(CalendarContract.Events.DTEND, endTime.getTimeInMillis());
-                                values.put(CalendarContract.Events.EVENT_TIMEZONE, "GMT");
-                                values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PUBLIC);
-                                values.put(CalendarContract.Events.RRULE, new EventRecurrence()
-                                        .recursIn(EventRecurrence.RECURRENCE_WINDOW_WEEKLY)
-                                        .recursOn(EventRecurrence.RECURRENCE_ON_TUESDAY)
-                                        .recursOn(EventRecurrence.RECURRENCE_ON_THURSDAY)
-                                        .toString());
-                                values.put(CalendarContract.Events.EXRULE, "FREQ=WEEKLY;UNTIL=20150708T000000Z;BYDAY=TH");
-                                values.put(CalendarContract.Events.DURATION, "P3600S");
-                                values.put(CalendarContract.Events.EVENT_LOCATION, "Event Location");
+                                mEventsQueryHandler.create(EventModel.create()
+                                        .setCalendarId(mCalendarId)
+                                        .setTitle("Evento di prova")
+                                        .setDescription("Descrizione dell'evento di prova")
+                                        .setStartDate(beginTime)
+                                        .setEndDate(endTime)
+                                        .setAccessLevel(CalendarContract.Events.ACCESS_PUBLIC)
+                                        .setTimeZone("GMT"));
 
-                                mEventsQueryHandler.startInsert(1, null,
-                                        CalendarContract.Events.CONTENT_URI.buildUpon()
-                                                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, "private")
-                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
-                                                .build(), values);
+//                                ContentValues values = new ContentValues();
+//                                values.put(CalendarContract.Events.CALENDAR_ID, mCalendarId);
+//                                values.put(CalendarContract.Events.TITLE, "stocabbello");
+//                                values.put(CalendarContract.Events.DESCRIPTION, "un bellissimo evento di prova e guai a chi caga la minchia");
+//                                values.put(CalendarContract.Events.DTSTART, beginTime.getTimeInMillis());
+//                                values.putNull(CalendarContract.Events.DTEND);
+////                                values.put(CalendarContract.Events.DTEND, endTime.getTimeInMillis());
+//                                values.put(CalendarContract.Events.EVENT_TIMEZONE, "GMT");
+//                                values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PUBLIC);
+//                                values.put(CalendarContract.Events.RRULE, new EventRecurrence()
+//                                        .recursIn(EventRecurrence.RECURRENCE_WINDOW_WEEKLY)
+//                                        .recursOn(EventRecurrence.RECURRENCE_ON_TUESDAY)
+//                                        .recursOn(EventRecurrence.RECURRENCE_ON_THURSDAY)
+//                                        .toString());
+//                                values.put(CalendarContract.Events.EXRULE, "FREQ=WEEKLY;UNTIL=20150708T000000Z;BYDAY=TH");
+//                                values.put(CalendarContract.Events.DURATION, "P3600S");
+//                                values.put(CalendarContract.Events.EVENT_LOCATION, "Event Location");
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -117,16 +135,8 @@ public class EventsActivity
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                mEventsQueryHandler.startDelete(
-                                        1,
-                                        null,
-                                        CalendarContract.Events.CONTENT_URI.buildUpon().appendPath(String.valueOf(mEvents.get(position).getId()))
-                                                .appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, "private")
-                                                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
-                                                .build(),
-                                        null,
-                                        null);
+                                Log.e("EVENTS_ACTIVITY_DELETE", "id is " + mEvents.get(position).getId());
+                                mEventsQueryHandler.delete(mEvents.get(position));
                             }
                         })
                         .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -151,24 +161,10 @@ public class EventsActivity
     public void queryEvents(View v) {
         Log.e("CALENDARS_QUERY", "starting the query");
 
-        String[] projection = {
-                CalendarContract.Events._ID,
-                CalendarContract.Events.TITLE,
-                CalendarContract.Events.DTSTART,
-                CalendarContract.Events.DTEND
-        };
-
-        String selectionClause = CalendarContract.Events.CALENDAR_ID + " = ?";
-        String[] selectionArgs = new String[]{String.valueOf(this.mCalendarId)};
-
-        this.mEventsQueryHandler.startQuery(
-                1,
-                null,
-                CalendarContract.Events.CONTENT_URI,
-                projection,
-                selectionClause,
-                selectionArgs,
-                CalendarContract.Events.DTSTART + " ASC");
+        this.mEventsQueryHandler.getAll(
+                EventModel.create(),
+                CalendarContract.Events.CALENDAR_ID + " = ?",
+                new String[]{String.valueOf(this.mCalendarId)});
     }
 
     // endregion

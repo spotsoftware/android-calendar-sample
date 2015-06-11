@@ -18,8 +18,8 @@ public class BaseAsyncQueryHandler<TModel extends ContentProviderEntityModel> ex
 
     // region Public methods
 
-    public void getAll(TModel model) {
-        this.startQuery(1, null, model.getContentProviderUri(), model.getProjection(), null, null, null);
+    public void getAll(TModel model, String clause, String[] args) {
+        this.startQuery(1, null, model.getContentProviderUri(), model.getProjection(), clause, args, null);
     }
 
     public void get(TModel model) {
