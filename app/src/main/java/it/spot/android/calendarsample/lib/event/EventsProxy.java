@@ -1,4 +1,4 @@
-package it.spot.android.calendarsample.event;
+package it.spot.android.calendarsample.lib.event;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -9,7 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.spot.android.calendarsample.shared.CalendarContractProxy;
+import it.spot.android.calendarsample.lib.shared.CalendarContractProxy;
 
 /**
  * @author a.rinaldi

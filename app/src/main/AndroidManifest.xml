@@ -11,10 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SplashActivity"
-            android:label="@string/app_name"></activity>
-        <activity
-            android:name=".calendar.CalendarsActivity"
+            android:name=".sample.CalendarsActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".event.EventsActivity"
+            android:name=".sample.EventsActivity"
             android:label="@string/app_name" />
     </application>
 

@@ -1,4 +1,4 @@
-package it.spot.android.calendarsample.event;
+package it.spot.android.calendarsample.sample;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,6 +18,10 @@ import java.util.List;
 import java.util.TimeZone;
 
 import it.spot.android.calendarsample.R;
+import it.spot.android.calendarsample.lib.event.EventModel;
+import it.spot.android.calendarsample.lib.event.EventRecurrence;
+import it.spot.android.calendarsample.lib.event.EventsArrayAdapter;
+import it.spot.android.calendarsample.lib.event.EventsProxy;
 
 
 public class EventsActivity
@@ -89,12 +93,12 @@ public class EventsActivity
                                         .setAccessLevel(CalendarContract.Events.ACCESS_PUBLIC)
                                         .setStartDate(beginTime)
                                         .enableRecurrence(true)
-                                        .setRecurrence(new EventRecurrence()
+                                        .setRecurrence(EventRecurrence.create()
                                                 .recursIn(EventRecurrence.RECURRENCE_WINDOW_WEEKLY)
                                                 .recursOn(EventRecurrence.RECURRENCE_ON_WEDNESDAY)
                                                 .recursOn(EventRecurrence.RECURRENCE_ON_FRIDAY)
                                                 .recursUntil(endTime))
-                                        .setExcRecurrence(new EventRecurrence()
+                                        .setExcRecurrence(EventRecurrence.create()
                                                 .recursIn(EventRecurrence.RECURRENCE_WINDOW_WEEKLY)
                                                 .recursOn(EventRecurrence.RECURRENCE_ON_WEDNESDAY)
                                                 .recursUntil(endExTime))

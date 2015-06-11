@@ -1,4 +1,4 @@
-package it.spot.android.calendarsample.shared;
+package it.spot.android.calendarsample.lib.shared;
 
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;

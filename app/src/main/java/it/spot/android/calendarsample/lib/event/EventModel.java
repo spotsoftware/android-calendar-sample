@@ -1,4 +1,4 @@
-package it.spot.android.calendarsample.event;
+package it.spot.android.calendarsample.lib.event;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -7,7 +7,7 @@ import android.provider.CalendarContract;
 
 import java.util.Calendar;
 
-import it.spot.android.calendarsample.shared.ContentProviderEntityModel;
+import it.spot.android.calendarsample.lib.shared.ContentProviderEntityModel;
 
 /**
  * @author a.rinaldi

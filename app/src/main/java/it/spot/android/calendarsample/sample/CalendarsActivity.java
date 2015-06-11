@@ -1,4 +1,4 @@
-package it.spot.android.calendarsample.calendar;
+package it.spot.android.calendarsample.sample;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.spot.android.calendarsample.R;
-import it.spot.android.calendarsample.event.EventsActivity;
+import it.spot.android.calendarsample.lib.calendar.CalendarModel;
+import it.spot.android.calendarsample.lib.calendar.CalendarsArrayAdapter;
+import it.spot.android.calendarsample.lib.calendar.CalendarsProxy;
 
 
 public class CalendarsActivity

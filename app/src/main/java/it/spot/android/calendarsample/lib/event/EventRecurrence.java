@@ -1,4 +1,4 @@
-package it.spot.android.calendarsample.event;
+package it.spot.android.calendarsample.lib.event;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

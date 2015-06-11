@@ -1,11 +1,11 @@
-package it.spot.android.calendarsample.calendar;
+package it.spot.android.calendarsample.lib.calendar;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 
-import it.spot.android.calendarsample.shared.ContentProviderEntityModel;
+import it.spot.android.calendarsample.lib.shared.ContentProviderEntityModel;
 
 /**
  * @author a.rinaldi
