@@ -30,7 +30,7 @@ public abstract class ContentProviderEntityModel {
         this.mId = id;
     }
 
-    public abstract Uri getContentProviderUri();
+    public abstract Uri getEntityUri();
 
     public abstract String[] getProjection();
 

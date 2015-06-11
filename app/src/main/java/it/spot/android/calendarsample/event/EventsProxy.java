@@ -1,25 +1,26 @@
-package it.spot.android.calendarsample.calendar;
+package it.spot.android.calendarsample.event;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.CalendarContract;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import it.spot.android.calendarsample.shared.BaseAsyncQueryHandler;
+import it.spot.android.calendarsample.shared.CalendarContractProxy;
 
 /**
  * @author a.rinaldi
  */
-public class CalendarsQueryHandler extends BaseAsyncQueryHandler<CalendarModel> {
+public class EventsProxy extends CalendarContractProxy<EventModel> {
 
     private final ArrayList<Listener> mListeners;
 
     // region Construction
 
-    public CalendarsQueryHandler(ContentResolver cr) {
+    public EventsProxy(ContentResolver cr) {
         super(cr);
         this.mListeners = new ArrayList<Listener>();
     }
@@ -29,40 +30,46 @@ public class CalendarsQueryHandler extends BaseAsyncQueryHandler<CalendarModel> 
     // region AsyncQueryHandler implementation
 
     @Override
-    protected void onUpdateComplete(int token, Object cookie, int result) {
-        super.onUpdateComplete(token, cookie, result);
-        Log.e("CALENDAR_UPDATE", "Result is " + result);
-    }
-
-    @Override
     protected void onInsertComplete(int token, Object cookie, Uri uri) {
-        if (uri != null) {
-            this.notifyCalendarCreated();
-        }
+        this.notifyCalendarCreated();
     }
 
     @Override
     protected void onDeleteComplete(int token, Object cookie, int result) {
         this.notifyCalendarDeleted();
-        Log.e("CALENDAR_DELETE", "Result is " + result);
+    }
+
+    @Override
+    protected void onUpdateComplete(int token, Object cookie, int result) {
+        this.notifyCalendarUpdated();
     }
 
     @Override
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-        ArrayList<CalendarModel> calendars = new ArrayList<CalendarModel>();
+        Log.e("CAL_QUERY_HANDLER", "query completed with " + cursor.getCount() + " records");
+
+        EventModel model;
+        ArrayList<EventModel> events = new ArrayList<EventModel>();
 
         if (cursor != null && cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
-                calendars.add(CalendarModel.createFromCursor(cursor));
+                model = EventModel.create();
+                model.fillFromCursor(cursor);
+                events.add(model);
             }
         }
 
-        this.notifyCalendarsRetrieved(calendars);
+        this.notifyCalendarsRetrieved(events);
     }
 
     // endregion
 
     // region Public methods
+
+    public void deleteAllEventsForCalendar(EventModel model, int calendarId) {
+        Log.e("DELETE_ALL_EVENTS", "" + calendarId);
+        this.startDelete(1, null, model.getEntityUri(), CalendarContract.Events.CALENDAR_ID + " = ? ", new String[]{String.valueOf(calendarId)});
+    }
 
     public void registerListener(Listener listener) {
         if (!this.mListeners.contains(listener)) {
@@ -82,19 +89,25 @@ public class CalendarsQueryHandler extends BaseAsyncQueryHandler<CalendarModel> 
 
     private void notifyCalendarCreated() {
         for (Listener listener : this.mListeners) {
-            listener.onCalendarCreated();
+            listener.onEventCreated();
+        }
+    }
+
+    private void notifyCalendarUpdated() {
+        for (Listener listener : this.mListeners) {
+            listener.onEventUpdated();
         }
     }
 
     private void notifyCalendarDeleted() {
         for (Listener listener : this.mListeners) {
-            listener.onCalendarDeleted();
+            listener.onEventDeleted();
         }
     }
 
-    private void notifyCalendarsRetrieved(ArrayList<CalendarModel> calendars) {
+    private void notifyCalendarsRetrieved(ArrayList<EventModel> events) {
         for (Listener listener : this.mListeners) {
-            listener.onCalendarsRetrieved(calendars);
+            listener.onEventsRetrieved(events);
         }
     }
 
@@ -104,11 +117,13 @@ public class CalendarsQueryHandler extends BaseAsyncQueryHandler<CalendarModel> 
 
     public interface Listener {
 
-        void onCalendarsRetrieved(List<CalendarModel> calendars);
+        void onEventsRetrieved(List<EventModel> events);
 
-        void onCalendarCreated();
+        void onEventCreated();
 
-        void onCalendarDeleted();
+        void onEventDeleted();
+
+        void onEventUpdated();
     }
 
     // endregion

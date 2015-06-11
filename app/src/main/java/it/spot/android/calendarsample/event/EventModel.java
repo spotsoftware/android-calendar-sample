@@ -186,14 +186,8 @@ public class EventModel extends ContentProviderEntityModel {
     // region ContentProviderEntityModel implementation
 
     @Override
-    public Uri getContentProviderUri() {
-        Uri.Builder builder = CalendarContract.Events.CONTENT_URI.buildUpon();
-
-            builder.appendQueryParameter(android.provider.CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                    .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, "private")
-                    .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL);
-
-        return builder.build();
+    public Uri getEntityUri() {
+        return CalendarContract.Events.CONTENT_URI;
     }
 
     @Override

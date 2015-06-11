@@ -22,11 +22,11 @@ import it.spot.android.calendarsample.R;
 
 public class EventsActivity
         extends Activity
-        implements EventsQueryHandler.Listener {
+        implements EventsProxy.Listener {
 
     public static final String EXTRA_CALENDAR_ID = "calendar_id";
 
-    private EventsQueryHandler mEventsQueryHandler;
+    private EventsProxy mEventsQueryHandler;
 
     private ArrayList<EventModel> mEvents;
     private EventsArrayAdapter mEventsAdapter;
@@ -166,7 +166,7 @@ public class EventsActivity
             }
         });
 
-        this.mEventsQueryHandler = new EventsQueryHandler(this.getContentResolver());
+        this.mEventsQueryHandler = new EventsProxy(this.getContentResolver());
         this.mEventsQueryHandler.registerListener(this);
     }
 
@@ -185,7 +185,7 @@ public class EventsActivity
 
     // endregion
 
-    // region EventsQueryHandler.Listener implementation
+    // region EventsProxy.Listener implementation
 
     @Override
     public void onEventsRetrieved(List<EventModel> events) {

@@ -23,9 +23,9 @@ import it.spot.android.calendarsample.event.EventsActivity;
 
 public class CalendarsActivity
         extends Activity
-        implements CalendarsQueryHandler.Listener {
+        implements CalendarsProxy.Listener {
 
-    private CalendarsQueryHandler mCalendarsQueryHandler;
+    private CalendarsProxy mCalendarsQueryHandler;
 
     private ArrayList<CalendarModel> mCalendars;
     private CalendarsArrayAdapter mCalendarsAdapter;
@@ -61,8 +61,8 @@ public class CalendarsActivity
                                         .enableSyncEvents(true)
                                         .setVisibility(true)
                                         .setAccessLevel(CalendarContract.Calendars.CAL_ACCESS_OWNER)
-                                        .setAccountName("private")
-                                        .setAccountType(CalendarContract.ACCOUNT_TYPE_LOCAL)
+                                        .setAccountName(mCalendarsQueryHandler.getProxyContext().getAccountName())
+                                        .setAccountType(mCalendarsQueryHandler.getProxyContext().getAccountType())
                                         .setName(nameEditText.getText().toString())
                                         .setDisplayName(dispNameEditText.getText().toString()));
                             }
@@ -107,7 +107,7 @@ public class CalendarsActivity
             }
         });
 
-        this.mCalendarsQueryHandler = new CalendarsQueryHandler(this.getContentResolver());
+        this.mCalendarsQueryHandler = new CalendarsProxy(this.getContentResolver());
         this.mCalendarsQueryHandler.registerListener(this);
     }
 
@@ -121,7 +121,7 @@ public class CalendarsActivity
 
     // endregion
 
-    // region CalendarsQueryHandler.Listener implementation
+    // region CalendarsProxy.Listener implementation
 
     @Override
     public void onCalendarCreated() {
