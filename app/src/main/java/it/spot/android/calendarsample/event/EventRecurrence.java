@@ -1,7 +1,9 @@
 package it.spot.android.calendarsample.event;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * @author a.rinaldi
@@ -67,8 +69,7 @@ public class EventRecurrence {
     }
 
     public EventRecurrence recursUntil(Calendar date) {
-
-
+        this.mRecursUntil = date;
         return this;
     }
 
@@ -89,6 +90,11 @@ public class EventRecurrence {
 
         if (this.mRecursEvery > -1) {
             recurrence += ";INTERVAL=" + this.mRecursEvery;
+        }
+
+        if (this.mRecursUntil != null) {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+            recurrence += ";UNTIL=" + formatter.format(this.mRecursUntil.getTime()) + "T000000Z";
         }
 
         if (this.mRecursOn.size() > 0) {

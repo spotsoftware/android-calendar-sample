@@ -65,7 +65,41 @@ public class EventsActivity
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
 
+                                Calendar beginTime = Calendar.getInstance();
+                                beginTime.set(Calendar.HOUR_OF_DAY, 16);
+                                beginTime.set(Calendar.MINUTE, 25);
+                                beginTime.setTimeZone(TimeZone.getDefault());
+                                Calendar endTime = Calendar.getInstance();
+                                endTime.set(Calendar.MONTH, 8);
+                                endTime.set(Calendar.DAY_OF_MONTH, 25);
+                                endTime.set(Calendar.HOUR_OF_DAY, 22);
+                                endTime.set(Calendar.MINUTE, 50);
+                                endTime.setTimeZone(TimeZone.getDefault());
+                                Calendar endExTime = Calendar.getInstance();
+                                endExTime.set(Calendar.MONTH, 6);
+                                endExTime.set(Calendar.DAY_OF_MONTH, 25);
+                                endExTime.set(Calendar.HOUR_OF_DAY, 22);
+                                endExTime.set(Calendar.MINUTE, 50);
+                                endExTime.setTimeZone(TimeZone.getDefault());
 
+                                mEventsQueryHandler.create(EventModel.create()
+                                        .setCalendarId(mCalendarId)
+                                        .setTitle("Evento ricorrente di prova")
+                                        .setDescription("Descrizione dell'evento ricorrente di prova")
+                                        .setAccessLevel(CalendarContract.Events.ACCESS_PUBLIC)
+                                        .setStartDate(beginTime)
+                                        .enableRecurrence(true)
+                                        .setRecurrence(new EventRecurrence()
+                                                .recursIn(EventRecurrence.RECURRENCE_WINDOW_WEEKLY)
+                                                .recursOn(EventRecurrence.RECURRENCE_ON_WEDNESDAY)
+                                                .recursOn(EventRecurrence.RECURRENCE_ON_FRIDAY)
+                                                .recursUntil(endTime))
+                                        .setExcRecurrence(new EventRecurrence()
+                                                .recursIn(EventRecurrence.RECURRENCE_WINDOW_WEEKLY)
+                                                .recursOn(EventRecurrence.RECURRENCE_ON_WEDNESDAY)
+                                                .recursUntil(endExTime))
+                                        .setDuration(3600)
+                                        .setTimeZone("GMT"));
                             }
                         })
                         .setNeutralButton(R.string.create, new DialogInterface.OnClickListener() {
@@ -91,24 +125,6 @@ public class EventsActivity
                                         .setEndDate(endTime)
                                         .setAccessLevel(CalendarContract.Events.ACCESS_PUBLIC)
                                         .setTimeZone("GMT"));
-
-//                                ContentValues values = new ContentValues();
-//                                values.put(CalendarContract.Events.CALENDAR_ID, mCalendarId);
-//                                values.put(CalendarContract.Events.TITLE, "stocabbello");
-//                                values.put(CalendarContract.Events.DESCRIPTION, "un bellissimo evento di prova e guai a chi caga la minchia");
-//                                values.put(CalendarContract.Events.DTSTART, beginTime.getTimeInMillis());
-//                                values.putNull(CalendarContract.Events.DTEND);
-////                                values.put(CalendarContract.Events.DTEND, endTime.getTimeInMillis());
-//                                values.put(CalendarContract.Events.EVENT_TIMEZONE, "GMT");
-//                                values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PUBLIC);
-//                                values.put(CalendarContract.Events.RRULE, new EventRecurrence()
-//                                        .recursIn(EventRecurrence.RECURRENCE_WINDOW_WEEKLY)
-//                                        .recursOn(EventRecurrence.RECURRENCE_ON_TUESDAY)
-//                                        .recursOn(EventRecurrence.RECURRENCE_ON_THURSDAY)
-//                                        .toString());
-//                                values.put(CalendarContract.Events.EXRULE, "FREQ=WEEKLY;UNTIL=20150708T000000Z;BYDAY=TH");
-//                                values.put(CalendarContract.Events.DURATION, "P3600S");
-//                                values.put(CalendarContract.Events.EVENT_LOCATION, "Event Location");
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
